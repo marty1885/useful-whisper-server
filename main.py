@@ -1,4 +1,6 @@
-from bottle import route, run, request, post
+from fastapi import FastAPI, Request
+from fastapi.responses import PlainTextResponse
+import uvicorn
 from useful_transformers import WhisperModel, decode_pcm
 import useful_transformers
 import io
@@ -9,15 +11,18 @@ print("Loading model...")
 model = WhisperModel()
 print("Model loaded!")
 
-@post('/transcribe')
-def transcribe():
-    body = request.body.read()
+app = FastAPI()
+
+@app.post("/transcribe")
+async def transcribe(request: Request):
+    body = await request.body()
     audio, sr = sf.read(io.BytesIO(body))
     if sr != 16000:
         audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
     text = decode_pcm(audio, model)
     print(text)
 
-    return text
+    return PlainTextResponse(text)
 
-run(host='0.0.0.0', port=4997)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=4997)
