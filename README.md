@@ -6,5 +6,5 @@ First, install [useful-tranformers](https://github.com/usefulsensors/useful-tran
 
 ```bash
 conda install librosa soundfile fastapi
-python main.py
+tasket -c 4-7 python main.py
 ```
